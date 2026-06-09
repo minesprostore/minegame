@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💣 Mines - Premium Betting Game</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif}
+body{background:#0a0e1a;color:#fff;min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#1a1f35}
+::-webkit-scrollbar-thumb{background:#667eea;border-radius:3px}
+.page{display:none}
+.page.active{display:block}
+.auth-container{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#121830,#080c18);padding:20px}
+.auth-card{background:linear-gradient(145deg,#1a1f35,#0f1328);border:1px solid rgba(102,126,234,.2);border-radius:24px;padding:40px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.auth-card .logo{text-align:center;margin-bottom:30px}
+.auth-card .logo h1{font-size:2.5rem;background:linear-gradient(135deg,#667eea,#e066ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.auth-card .logo p{color:#8892b0;margin-top:5px}
+.form-group{margin-bottom:18px}
+.form-group label{display:block;color:#c8d0e0;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.form-group input,.form-group select{width:100%;padding:14px 16px;background:#0f1328;border:1px solid #2a3050;border-radius:12px;color:#fff;font-size:1rem;transition:all .3s}
+.form-group input:focus,.form-group select:focus{outline:none;border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,.15)}
+.btn{padding:14px 28px;border:none;border-radius:12px;font-weight:700;font-size:1rem;cursor:pointer;transition:all .3s;text-transform:uppercase;letter-spacing:1px;text-decoration:none;display:inline-block;text-align:center}
+.btn-primary{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(102,126,234,.4)}
+.btn-success{background:linear-gradient(135deg,#11998e,#38ef7d);color:#fff}
+.btn-success:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(56,239,125,.4)}
+.btn-warning{background:linear-gradient(135deg,#f093fb,#f5576c);color:#fff}
+.btn-warning:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(245,87,108,.4)}
+.btn-danger{background:linear-gradient(135deg,#cb2d3e,#ef473a);color:#fff}
+.btn-danger:hover{transform:translateY(-2px)}
+.btn-info{background:linear-gradient(135deg,#4facfe,#00f2fe);color:#fff}
+.btn-info:hover{transform:translateY(-2px)}
+.btn-block{width:100%}
+.btn-sm{padding:8px 18px;font-size:.85rem}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+.auth-link{text-align:center;margin-top:20px;color:#8892b0}
+.auth-link a{color:#667eea;text-decoration:none}
+.auth-link a:hover{text-decoration:underline}
+.alert{padding:14px 18px;border-radius:12px;margin-bottom:20px;font-weight:600;font-size:.95rem}
+.alert-error{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#ef4444}
+.alert-success{background:rgba(56,239,125,.15);border:1px solid rgba(56,239,125,.3);color:#38ef7d}
+.navbar{background:rgba(15,19,40,.95);backdrop-filter:blur(20px);padding:12px 30px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(102,126,234,.15);position:sticky;top:0;z-index:100;flex-wrap:wrap;gap:10px}
+.navbar .brand{font-size:1.4rem;font-weight:900;background:linear-gradient(135deg,#667eea,#e066ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.navbar .nav-menu{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.navbar .balance{background:rgba(102,126,234,.15);padding:8px 18px;border-radius:30px;font-weight:700;border:1px solid rgba(102,126,234,.2)}
+.container{max-width:1400px;margin:0 auto;padding:20px}
+.grid-2{display:grid;grid-template-columns:1fr 340px;gap:25px}
+@media(max-width:768px){.grid-2{grid-template-columns:1fr}}
+.card{background:linear-gradient(145deg,#1a1f35,#0f1328);border:1px solid rgba(102,126,234,.15);border-radius:20px;padding:25px}
+.card h3{font-size:1.2rem;margin-bottom:15px;color:#c8d0e0}
+.qr-display{width:200px;height:200px;margin:15px auto;background:#fff;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center;border:2px dashed #2a3050}
+.qr-display img{max-width:100%;max-height:100%}
+.qr-display .placeholder{font-size:3rem;color:#666}
+.amount-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:15px 0}
+.amount-opt{padding:10px;background:#0f1328;border:2px solid #2a3050;border-radius:8px;cursor:pointer;font-weight:700;transition:all .3s;color:#c8d0e0;text-align:center;font-size:.9rem}
+.amount-opt:hover,.amount-opt.active{border-color:#667eea;background:rgba(102,126,234,.1);color:#fff}
+.upi-box{background:#0f1328;padding:15px;border-radius:12px;margin:15px 0;border:1px solid #2a3050}
+.upi-id{font-size:1.1rem;font-weight:700;word-break:break-all;color:#e066ff}
+.copy-btn{background:#667eea;color:#fff;border:none;padding:5px 15px;border-radius:6px;cursor:pointer;margin-left:8px;font-size:.85rem}
+.quick-amts{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 20px}
+.amt-btn{padding:8px 16px;background:#0f1328;border:1px solid #2a3050;border-radius:8px;color:#c8d0e0;cursor:pointer;font-weight:600;transition:all .3s}
+.amt-btn:hover{border-color:#667eea}
+.bank-list{display:grid;gap:15px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+.bank-item{background:linear-gradient(145deg,#1a1f35,#0f1328);border:1px solid rgba(102,126,234,.15);border-radius:16px;padding:20px;position:relative}
+.bank-item .name{font-size:1.2rem;font-weight:700;color:#667eea}
+.bank-item .detail{color:#8892b0;margin-top:4px}
+.bank-item .del{position:absolute;top:15px;right:15px;background:rgba(239,68,68,.15);border:none;color:#ef4444;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;transition:all .3s}
+.bank-item .del:hover{background:rgba(239,68,68,.3)}
+.dashboard{display:grid;gap:25px}
+.welcome-card{background:linear-gradient(145deg,#1a1f35,#0f1328);border:1px solid rgba(102,126,234,.15);border-radius:20px;padding:30px}
+.welcome-card h2{font-size:1.8rem;margin-bottom:15px}
+.balance-display{text-align:center;padding:25px}
+.balance-display h3{color:#8892b0;font-size:.9rem;text-transform:uppercase;letter-spacing:2px}
+.balance-amount{font-size:3.5rem;font-weight:900;background:linear-gradient(135deg,#38ef7d,#11998e);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.quick-actions{display:flex;gap:15px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+.action-btn{padding:14px 30px;border-radius:14px;font-weight:700;font-size:1.1rem;text-decoration:none;transition:all .3s;cursor:pointer;border:none;color:#fff}
+.action-btn.deposit{background:linear-gradient(135deg,#11998e,#38ef7d)}
+.action-btn.play{background:linear-gradient(135deg,#667eea,#764ba2)}
+.action-btn.withdraw{background:linear-gradient(135deg,#f093fb,#f5576c)}
+.action-btn:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.recent-transactions{background:linear-gradient(145deg,#1a1f35,#0f1328);border:1px solid rgba(102,126,234,.15);border-radius:20px;padding:25px}
+.recent-transactions table{width:100%;border-collapse:collapse}
+.recent-transactions th{text-align:left;padding:12px 10px;color:#8892b0;font-size:.85rem;text-transform:uppercase;border-bottom:1px solid #2a3050}
+.recent-transactions td{padding:12px 10px;border-bottom:1px solid rgba(42,48,80,.3)}
+.badge{padding:4px 12px;border-radius:20px;font-size:.8rem;font-weight:600}
+.badge-deposit{background:rgba(56,239,125,.15);color:#38ef7d}
+.badge-withdraw{background:rgba(245,87,108,.15);color:#f5576c}
+.badge-bet{background:rgba(102,126,234,.15);color:#667eea}
+.badge-win{background:rgba(250,204,21,.15);color:#facc15}
+.badge-approved{background:rgba(56,239,125,.15);color:#38ef7d}
+.badge-pending{background:rgba(250,204,21,.15);color:#facc15}
+.badge-rejected{background:rgba(239,68,68,.15);color:#ef4444}
+/* === MINES GAME === */
+.mines-layout{display:grid;grid-template-columns:1fr 320px;gap:20px}
+@media(max-width:900px){.mines-layout{grid-template-columns:1fr}}
+.mines-grid-wrapper{background:linear-gradient(145deg,#0d1125,#0a0e1a);border:1px solid rgba(102,126,234,.15);border-radius:20px;padding:20px;text-align:center}
+.mines-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:500px;margin:0 auto;padding:10px}
+.mine-cell{aspect-ratio:1;border-radius:16px;cursor:pointer;background:linear-gradient(145deg,#1a1f35,#0f1328);border:2px solid #2a3050;display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:900;transition:all .3s;min-height:90px;position:relative;overflow:hidden}
+.mine-cell:hover{border-color:#667eea;transform:scale(1.03);box-shadow:0 0 15px rgba(102,126,234,.15)}
+.mine-cell.disabled{pointer-events:none;opacity:.6}
+.mine-cell.revealed{border-color:#38ef7d;background:rgba(56,239,125,.1);cursor:default;transform:none}
+.mine-cell.bomb{border-color:#ef4444;background:rgba(239,68,68,.2);cursor:default;animation:shake .4s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.cell-label{position:absolute;top:5px;left:8px;font-size:.65rem;color:#8892b0;font-weight:600}
+.cell-icon{font-size:2rem}
+.cell-mult{font-size:.7rem;color:#38ef7d;font-weight:700;margin-top:2px}
+.mines-status{display:flex;justify-content:space-around;flex-wrap:wrap;gap:15px;text-align:center;padding:15px;background:#0f1328;border-radius:12px;margin-top:15px;border:1px solid #2a3050}
+.mines-status .stat-val{font-size:1.8rem;font-weight:900;font-family:monospace}
+.mines-status .stat-lbl{color:#8892b0;font-size:.8rem;text-transform:uppercase;letter-spacing:.5px}
+.mult-table{width:100%;margin-top:10px;border-collapse:collapse}
+.mult-table td{padding:6px 8px;text-align:center;border:1px solid #2a3050;font-size:.8rem}
+.mult-table th{padding:8px;background:#0f1328;color:#8892b0;font-size:.75rem;text-transform:uppercase;border:1px solid #2a3050}
+.bomb-options{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.bomb-opt{padding:10px;background:#0f1328;border:2px solid #2a3050;border-radius:8px;cursor:pointer;font-weight:700;transition:all .3s;text-align:center;color:#c8d0e0}
+.bomb-opt:hover,.bomb-opt.active{border-color:#667eea;background:rgba(102,126,234,.1);color:#fff}
+</style>
+</head>
+<body>
+
+<!-- ===== SIGNUP ===== -->
+<div class="page active" id="p-signup">
+<div class="auth-container">
+<div class="auth-card">
+<div class="logo"><h1>💣 Mines</h1><p>Create account & get ₹50 FREE 🎁</p></div>
+<div id="suAlert"></div>
+<form id="fSignup">
+<div class="form-group"><label>Username</label><input id="suUser" placeholder="Choose a username" required></div>
+<div class="form-group"><label>Email</label><input type="email" id="suEmail" placeholder="Enter your email" required></div>
+<div class="form-group"><label>Password</label><input type="password" id="suPass" placeholder="Min 6 characters" required></div>
+<div class="form-group"><label>Confirm Password</label><input type="password" id="suPass2" placeholder="Confirm password" required></div>
+<button class="btn btn-primary btn-block" style="font-size:1.1rem;padding:16px">🎁 Sign Up - Get ₹50 Free</button>
+</form>
+<p class="auth-link">Already have an account? <a href="#" onclick="showPage('p-login')">Login here</a></p>
+</div></div></div>
+
+<!-- ===== LOGIN ===== -->
+<div class="page" id="p-login">
+<div class="auth-container">
+<div class="auth-card">
+<div class="logo"><h1>💣 Mines</h1><p>Welcome back!</p></div>
+<div id="liAlert"></div>
+<form id="fLogin">
+<div class="form-group"><label>Username or Email</label><input id="liUser" placeholder="Enter username or email" required></div>
+<div class="form-group"><label>Password</label><input type="password" id="liPass" placeholder="Enter password" required></div>
+<button class="btn btn-primary btn-block">Login</button>
+</form>
+<p class="auth-link">No account? <a href="#" onclick="showPage('p-signup')">Sign Up</a></p>
+</div></div></div>
+
+<!-- ===== DASHBOARD ===== -->
+<div class="page" id="p-dash">
+<nav class="navbar">
+<div class="brand">💣 Mines</div>
+<div class="nav-menu">
+<span class="balance" id="dashBal">💰 ₹0.00</span>
+<button class="btn btn-primary btn-sm" onclick="showPage('p-game')">Play</button>
+<button class="btn btn-success btn-sm" onclick="showPage('p-dep')">Deposit</button>
+<button class="btn btn-warning btn-sm" onclick="showPage('p-with')">Withdraw</button>
+<button class="btn btn-info btn-sm" onclick="showPage('p-bank')">Bank</button>
+<button class="btn btn-danger btn-sm" onclick="logout()">Logout</button>
+</div></nav>
+<div class="container">
+<div class="dashboard">
+<div class="welcome-card">
+<h2 id="dashWelcome">Welcome! 👋</h2>
+<div class="balance-display"><h3>Your Balance</h3><div class="balance-amount" id="dashBalBig">₹0.00</div></div>
+<div class="quick-actions">
+<button class="action-btn deposit" onclick="showPage('p-dep')">+ Deposit</button>
+<button class="action-btn play" onclick="showPage('p-game')">💣 Play Mines</button>
+<button class="action-btn withdraw" onclick="showPage('p-with')">- Withdraw</button>
+</div></div>
+<div class="recent-transactions"><h3>Recent Transactions</h3><table><thead><tr><th>Type</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody id="dashTbody"><tr><td colspan="4">No transactions yet</td></tr></tbody></table></div>
+</div></div></div>
+
+<!-- ===== DEPOSIT ===== -->
+<div class="page" id="p-dep">
+<nav class="navbar">
+<div class="brand">💣 Mines</div>
+<div class="nav-menu">
+<span class="balance" id="depBal">💰 ₹0.00</span>
+<button class="btn btn-sm" onclick="showPage('p-dash')">Dashboard</button>
+<button class="btn btn-primary btn-sm" onclick="showPage('p-game')">Play</button>
+<button class="btn btn-danger btn-sm" onclick="logout()">Logout</button>
+</div></nav>
+<div class="container">
+<h2>💰 Deposit Funds</h2>
+<div id="depAlert"></div>
+<div class="grid-2">
+<div class="card">
+<h3>Step 1: Choose Amount</h3>
+<div class="amount-grid">
+<button class="amount-opt" onclick="selDepAmt(100)">₹100</button>
+<button class="amount-opt" onclick="selDepAmt(200)">₹200</button>
+<button class="amount-opt" onclick="selDepAmt(500)">₹500</button>
+<button class="amount-opt" onclick="selDepAmt(1000)">₹1000</button>
+<button class="amount-opt" onclick="selDepAmt(2000)">₹2000</button>
+<button class="amount-opt" onclick="selDepAmt(5000)">₹5000</button>
+<button class="amount-opt" onclick="selDepAmt(10000)">₹10000</button>
+<button class="amount-opt" onclick="custDepAmt()">Custom</button>
+</div>
+<form id="fDep">
+<div class="form-group"><label>Amount (₹)</label><input type="number" id="depInp" min="10" step="1" placeholder="Enter amount" oninput="autoGenQR()" required></div>
+<h3>Step 2: Pay to this UPI ID</h3>
+<div class="upi-box"><p><strong>Pay to:</strong></p><div class="upi-id" id="upiDisplay">subhadeepghosh@fam <button type="button" class="copy-btn" onclick="copyUpi()">📋 Copy</button></div><p style="color:#8892b0;font-size:.75rem;margin-top:5px">✏️ Badalne ke liye code mein "</p></div>
+<h3>QR Code (Auto Generate)</h3>
+<div class="qr-display" id="qrBox"><span class="placeholder" id="qrPl">📱 Select amount</span><img id="qrImg" style="display:none;width:100%;height:100%;object-fit:contain" alt="QR"></div>
+<p style="color:#8892b0;font-size:.85rem;margin:5px 0 15px">✅ Amount select karte hi QR auto generate!</p>
+<h3>Step 3: Enter UTR / Transaction ID</h3>
+<div class="form-group"><label>Transaction / UTR ID (after payment)</label><input id="depTxn" placeholder="Enter UPI transaction ID / UTR" required></div>
+<button class="btn btn-success btn-block">✅ Submit Deposit Request</button>
+</form></div>
+<div><div class="card"><h3>📋 How to Deposit</h3><ol style="color:#8892b0;line-height:2;padding-left:20px"><li>Select amount → QR auto generates</li><li>Copy UPI ID or scan QR</li><li>Open GPay/PhonePe/Paytm</li><li>Send payment</li><li>Enter UTR ID</li><li>Click Submit</li></ol></div>
+<div class="card"><h3>⚡ Info</h3><ul style="color:#8892b0;line-height:2;padding-left:20px"><li>Min: ₹10</li><li>Max: ₹1,00,000</li><li>Admin approval required</li></ul></div></div></div></div></div>
+
+<!-- ===== WITHDRAW ===== -->
+<div class="page" id="p-with">
+<nav class="navbar">
+<div class="brand">💣 Mines</div>
+<div class="nav-menu">
+<span class="balance" id="withBal">💰 ₹0.00</span>
+<button class="btn btn-sm" onclick="showPage('p-dash')">Dashboard</button>
+<button class="btn btn-primary btn-sm" onclick="showPage('p-game')">Play</button>
+<button class="btn btn-info btn-sm" onclick="showPage('p-bank')">+ Add Bank</button>
+<button class="btn btn-danger btn-sm" onclick="logout()">Logout</button>
+</div></nav>
+<div class="container">
+<h2>💸 Withdraw Funds</h2>
+<div id="withAlert"></div>
+<div class="grid-2">
+<div class="card">
+<div style="text-align:center;padding:20px;background:#0f1328;border-radius:16px;margin-bottom:20px;border:1px solid #2a3050"><h3 style="color:#8892b0;font-size:.9rem;text-transform:uppercase">Available Balance</h3><div class="balance-amount" id="withBalDisp" style="font-size:2.5rem">₹0.00</div></div>
+<form id="fWith">
+<div class="form-group"><label>Amount (₹)</label><input type="number" id="withInp" min="50" step="1" placeholder="Enter amount" required></div>
+<div class="quick-amts">
+<button type="button" class="amt-btn" onclick="setWA(500)">₹500</button>
+<button type="button" class="amt-btn" onclick="setWA(1000)">₹1000</button>
+<button type="button" class="amt-btn" onclick="setWA(2000)">₹2000</button>
+<button type="button" class="amt-btn" onclick="setWA(5000)">₹5000</button>
+<button type="button" class="amt-btn" onclick="setWMax()">MAX</button>
+</div>
+<div class="form-group"><label>Select Bank Account</label><select id="withSel" required><option value="">-- Select --</option></select></div>
+<div id="withNoBank" style="color:#ef4444;text-align:center;display:none">Please <a href="#" onclick="showPage('p-bank')" style="color:#667eea">add a bank account</a> first.</div>
+<button class="btn btn-warning btn-block" id="withSubBtn">Submit Withdrawal</button>
+</form></div>
+<div class="card"><h3>📋 Rules</h3><ul style="color:#8892b0;line-height:2;padding-left:20px"><li>Min: ₹50</li><li>Processing: 24-48 hrs</li><li>Admin approves</li></ul></div></div></div></div>
+
+<!-- ===== BANK ACCOUNTS ===== -->
+<div class="page" id="p-bank">
+<nav class="navbar">
+<div class="brand">💣 Mines</div>
+<div class="nav-menu">
+<span class="balance" id="bankBal">💰 ₹0.00</span>
+<button class="btn btn-sm" onclick="showPage('p-dash')">Dashboard</button>
+<button class="btn btn-primary btn-sm" onclick="showPage('p-game')">Play</button>
+<button class="btn btn-danger btn-sm" onclick="logout()">Logout</button>
+</div></nav>
+<div class="container">
+<h2>🏦 Bank Accounts</h2>
+<div id="bankAlert"></div>
+<div style="display:grid;grid-template-columns:1fr 380px;gap:25px;margin-top:20px">
+<div><h3 style="margin-bottom:15px">Your Accounts</h3><div class="bank-list" id="bankList"><p style="color:#8892b0">No accounts added yet.</p></div></div>
+<div class="card"><h3>➕ Add Bank Account</h3>
+<form id="fBank">
+<div class="form-group"><label>Bank Name</label><input id="bkName" placeholder="SBI, HDFC, etc" required></div>
+<div class="form-group"><label>Account Holder</label><input id="bkHolder" placeholder="As on bank" required></div>
+<div class="form-group"><label>Account Number</label><input id="bkNum" placeholder="Enter account number" required></div>
+<div class="form-group"><label>IFSC Code</label><input id="bkIfsc" placeholder="SBIN0001234"></div>
+<div class="form-group"><label>UPI ID (optional)</label><input id="bkUpi" placeholder="example@paytm"></div>
+<button class="btn btn-success btn-block">💾 Save Account</button>
+</form></div></div></div></div>
+
+<!-- ===== MINES GAME ===== -->
+<div class="page" id="p-game">
+<nav class="navbar">
+<div class="brand">💣 Mines</div>
+<div class="nav-menu">
+<span class="balance" id="gameBal">💰 ₹0.00</span>
+<button class="btn btn-sm" onclick="showPage('p-dash')">Dashboard</button>
+<button class="btn btn-success btn-sm" onclick="showPage('p-dep')">Deposit</button>
+<button class="btn btn-info btn-sm" onclick="showPage('p-bank')">Bank</button>
+<button class="btn btn-danger btn-sm" onclick="logout()">Logout</button>
+</div></nav>
+<div class="container" style="max-width:1400px">
+<div class="mines-layout">
+<div>
+<div class="mines-grid-wrapper">
+<h3 style="margin-bottom:10px;color:#c8d0e0">💣 Pick Safe Boxes - Avoid Bombs!</h3>
+<div class="mines-grid" id="minesGrid"></div>
+<div class="mines-status">
+<div><div class="stat-lbl">Multiplier</div><div class="stat-val" id="minesMult" style="color:#38ef7d">1.00x</div></div>
+<div><div class="stat-lbl">Potential Win</div><div class="stat-val" id="minesWin" style="color:#facc15">₹0</div></div>
+<div><div class="stat-lbl">Safe Left</div><div class="stat-val" id="minesSafe" style="color:#667eea">4</div></div>
+</div>
+</div></div>
+<div class="card" style="display:flex;flex-direction:column;gap:12px">
+<h3>💣 Place Your Bet</h3>
+<div class="form-group"><label>Bet Amount (₹)</label><input type="number" id="betInp" value="10" min="1" step="1"></div>
+<div class="form-group"><label>Number of Bombs</label>
+  <div class="bomb-options">
+    <div class="bomb-opt active" onclick="selBombs(1,this)">1 💣</div>
+    <div class="bomb-opt" onclick="selBombs(2,this)">2 💣💣</div>
+    <div class="bomb-opt" onclick="selBombs(3,this)">3 💣💣💣</div>
+    <div class="bomb-opt" onclick="selBombs(4,this)">4 💣💣💣💣</div>
+  </div>
+</div>
+<div class="bet-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">
+<button class="btn btn-sm btn-dark" onclick="multBet(0.5)" style="padding:10px;background:#0f1328;border:1px solid #2a3050;border-radius:8px;color:#c8d0e0;cursor:pointer;font-weight:600">½x</button>
+<button class="btn btn-sm btn-dark" onclick="multBet(2)" style="padding:10px;background:#0f1328;border:1px solid #2a3050;border-radius:8px;color:#c8d0e0;cursor:pointer;font-weight:600">2x</button>
+<button class="btn btn-sm btn-dark" onclick="multBet(3)" style="padding:10px;background:#0f1328;border:1px solid #2a3050;border-radius:8px;color:#c8d0e0;cursor:pointer;font-weight:600">3x</button>
+<button class="btn btn-sm btn-dark" onclick="multBet(5)" style="padding:10px;background:#0f1328;border:1px solid #2a3050;border-radius:8px;color:#c8d0e0;cursor:pointer;font-weight:600">5x</button>
+</div>
+<button class="btn btn-primary btn-block" id="btnStart" onclick="startMines()">🎯 Start Game</button>
+<button class="btn btn-success btn-block" id="btnCashout" onclick="cashOutMines()" disabled>💰 Cash Out</button>
+<div class="bet-info" style="padding:10px;background:#0f1328;border-radius:10px;text-align:center"><span style="color:#8892b0">Bet: </span><span id="curBet">₹0</span> <span style="color:#8892b0;margin-left:15px">Win: </span><span id="curWin" style="color:#38ef7d">₹0</span></div>
+<div><h4 style="color:#8892b0;font-size:.85rem;margin-bottom:8px">📜 Game History</h4><div class="bet-history" id="minesHist" style="background:#0f1328;border-radius:10px;padding:12px;max-height:120px;overflow-y:auto"></div></div>
+</div></div></div></div>
+
+<script>
+// ============= 🔥 UPI ID BADLO 🔥 =============
+const UPI_ID = "subhadeepghosh@fam";     // ⭐ ISKO APNI UPI SE BADLO
+const UPI_NAME = "Mines Game";       // ⭐ APNA NAAM
+
+// ============= DATA LAYER =============
+let D = { users: [], banks: {}, txns: [], minesHist: [] };
+try { const r = localStorage.getItem('mines_data'); if(r) D = JSON.parse(r); } catch(e){}
+function sv() { localStorage.setItem('mines_data', JSON.stringify(D)); }
+function uid() { return Date.now().toString(36)+Math.random().toString(36).substr(2,8).toUpperCase(); }
+function bal(id) { const u=D.users.find(x=>x.id===id); return u?u.balance:0; }
+function sBal(id,v) { const u=D.users.find(x=>x.id===id); if(u){u.balance=v;sv()} }
+function userTxns(id) { return (D.txns[id]||[]).slice().reverse(); }
+function userBanks(id) { return (D.banks[id]||[]); }
+function fmt(d) { return new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short'})+' '+new Date(d).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}); }
+function num(v) { return Number(v).toLocaleString('en-IN',{minimumFractionDigits:2}); }
+
+// Multiplier calculation
+function getMult(bombs, opened) {
+  const total=6, safe=total-bombs;
+  let prob=1;
+  for(let i=0;i<opened;i++) prob*=(safe-i)/(total-i);
+  if(prob<=0) return 0;
+  return Math.round((1/prob)*0.95*100)/100;
+}
+
+document.getElementById('upiDisplay').innerHTML = UPI_ID + ' <button type="button" class="copy-btn" onclick="copyUpi()">📋 Copy</button>';
+
+// ============= AUTH =============
+let me = null;
+(function(){ const s=localStorage.getItem('mines_user'); if(s){const f=D.users.find(u=>u.id===s);if(f)me=f;} })();
+function logout(){me=null;localStorage.removeItem('mines_user');document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('p-login').classList.add('active');}
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(me) refresh();
+  if(id==='p-game') initMinesGrid();
+}
+
+// ============= SIGNUP =============
+document.getElementById('fSignup').onsubmit=function(e){
+  e.preventDefault();
+  const user=document.getElementById('suUser').value.trim(), e2=document.getElementById('suEmail').value.trim(), p=document.getElementById('suPass').value, p2=document.getElementById('suPass2').value, a=document.getElementById('suAlert');
+  if(!user||!e2||!p){a.innerHTML='<div class="alert alert-error">All fields required!</div>';return;}
+  if(p!==p2){a.innerHTML='<div class="alert alert-error">Passwords mismatch!</div>';return;}
+  if(p.length<6){a.innerHTML='<div class="alert alert-error">Password min 6 chars</div>';return;}
+  if(D.users.find(u=>u.username===user)){a.innerHTML='<div class="alert alert-error">Username taken!</div>';return;}
+  if(D.users.find(u=>u.email===e2)){a.innerHTML='<div class="alert alert-error">Email already used!</div>';return;}
+  const id=uid();
+  D.users.push({id,username:user,email:e2,password:p,balance:50});
+  D.banks[id]=[]; D.txns[id]=[{id:uid(),type:'deposit',amount:50,status:'approved',desc:'🎁 Signup Bonus',date:new Date().toISOString()}];
+  me=D.users.find(u=>u.id===id); sv(); localStorage.setItem('mines_user',id);
+  a.innerHTML='<div class="alert alert-success">✅ Account created! ₹50 bonus credited! 🎉</div>';
+  setTimeout(()=>{showPage('p-dash');refresh();},800);
+};
+
+// ============= LOGIN =============
+document.getElementById('fLogin').onsubmit=function(e){
+  e.preventDefault();
+  const u=document.getElementById('liUser').value.trim(), p=document.getElementById('liPass').value, a=document.getElementById('liAlert');
+  const f=D.users.find(x=>(x.username===u||x.email===u)&&x.password===p);
+  if(!f){a.innerHTML='<div class="alert alert-error">Invalid credentials!</div>';return;}
+  me=f; localStorage.setItem('mines_user',f.id);
+  a.innerHTML='<div class="alert alert-success">Welcome back, '+f.username+'! 👋</div>';
+  setTimeout(()=>{showPage('p-dash');refresh();},500);
+};
+
+// ============= REFRESH =============
+function refresh(){
+  if(!me) return;
+  const b=me.balance;
+  ['dashBal','depBal','withBal','bankBal','gameBal'].forEach(id=>{document.getElementById(id).textContent='💰 ₹'+num(b);});
+  document.getElementById('dashBalBig').textContent='₹'+num(b);
+  document.getElementById('dashWelcome').textContent='Welcome, '+me.username+'! 👋';
+  document.getElementById('withBalDisp').textContent='₹'+num(b);
+  const txns=userTxns(me.id), tb=document.getElementById('dashTbody');
+  if(!txns.length) tb.innerHTML='<tr><td colspan="4">No transactions</td></tr>';
+  else tb.innerHTML=txns.map(t=>`<tr><td><span class="badge badge-${t.type}">${t.type.charAt(0).toUpperCase()+t.type.slice(1)}</span></td><td>₹${num(t.amount)}</td><td><span class="badge badge-${t.status}">${t.status.charAt(0).toUpperCase()+t.status.slice(1)}</span></td><td>${fmt(t.date)}</td></tr>`).join('');
+  renderBanks(); renderWithSel(); renderMinesHist();
+}
+
+// ============= BANKS =============
+function renderBanks(){
+  if(!me) return;
+  const banks=userBanks(me.id), el=document.getElementById('bankList');
+  if(!banks.length) el.innerHTML='<p style="color:#8892b0">No accounts added yet.</p>';
+  else el.innerHTML=banks.map(b=>`<div class="bank-item"><button class="del" onclick="delBank('${b.id}')">✕</button><div class="name">${b.bankName}</div><div class="detail">👤 ${b.holder}</div><div class="detail">💳 ${b.number}</div>${b.ifsc?`<div class="detail">🏛️ ${b.ifsc}</div>`:''}${b.upi?`<div class="detail">📱 ${b.upi}</div>`:''}</div>`).join('');
+}
+function renderWithSel(){
+  if(!me) return;
+  const banks=userBanks(me.id),sel=document.getElementById('withSel'),nb=document.getElementById('withNoBank'),sb=document.getElementById('withSubBtn');
+  if(!banks.length){sel.innerHTML='<option value="">-- No accounts --</option>';nb.style.display='block';sb.disabled=true;}
+  else{nb.style.display='none';sb.disabled=false;sel.innerHTML='<option value="">-- Select --</option>'+banks.map(b=>`<option value="${b.id}">${b.bankName} - ${b.number}</option>`).join('');}
+}
+document.getElementById('fBank').onsubmit=function(e){
+  e.preventDefault(); if(!me) return;
+  const nm=document.getElementById('bkName').value.trim(),h=document.getElementById('bkHolder').value.trim(),n=document.getElementById('bkNum').value.trim(),ifsc=document.getElementById('bkIfsc').value.trim(),upi=document.getElementById('bkUpi').value.trim();
+  if(!nm||!h||!n){document.getElementById('bankAlert').innerHTML='<div class="alert alert-error">Bank name, holder & number required!</div>';return;}
+  if(!D.banks[me.id]) D.banks[me.id]=[];
+  D.banks[me.id].push({id:uid(),bankName:nm,holder:h,number:n,ifsc,upi});
+  sv(); document.getElementById('bankAlert').innerHTML='<div class="alert alert-success">✅ Bank account saved!</div>';
+  this.reset(); renderBanks(); renderWithSel();
+  setTimeout(()=>document.getElementById('bankAlert').innerHTML='',2000);
+};
+function delBank(id){if(!me||!confirm('Delete?'))return;D.banks[me.id]=(D.banks[me.id]||[]).filter(b=>b.id!==id);sv();renderBanks();renderWithSel();}
+
+// ============= DEPOSIT =============
+function autoGenQR(){const a=parseFloat(document.getElementById('depInp').value);if(a&&a>=10){const lnk=`upi://pay?pa=${UPI_ID}&pn=${UPI_NAME}&am=${a}&cu=INR`;document.getElementById('qrImg').src=`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(lnk)}`;document.getElementById('qrImg').style.display='block';document.getElementById('qrPl').style.display='none';}else{document.getElementById('qrImg').style.display='none';document.getElementById('qrPl').style.display='block';document.getElementById('qrPl').textContent='📱 Enter amount';}}
+function selDepAmt(v){document.getElementById('depInp').value=v;document.querySelectorAll('.amount-opt').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');autoGenQR();}
+function custDepAmt(){document.getElementById('depInp').value='';document.getElementById('depInp').focus();document.querySelectorAll('.amount-opt').forEach(b=>b.classList.remove('active'));autoGenQR();}
+function copyUpi(){navigator.clipboard.writeText(UPI_ID).then(()=>alert('✅ UPI ID copied: '+UPI_ID));}
+document.getElementById('fDep').onsubmit=function(e){
+  e.preventDefault(); if(!me) return;
+  const a=parseFloat(document.getElementById('depInp').value), t=document.getElementById('depTxn').value.trim(), al=document.getElementById('depAlert');
+  if(!a||a<10){al.innerHTML='<div class="alert alert-error">Min deposit ₹10</div>';return;}
+  if(!t){al.innerHTML='<div class="alert alert-error">Enter UTR/Transaction ID after payment</div>';return;}
+  if(!D.txns[me.id]) D.txns[me.id]=[];
+  D.txns[me.id].push({id:uid(),type:'deposit',amount:a,status:'pending',desc:'UPI: '+t,date:new Date().toISOString(),txnId:t});
+  sv(); al.innerHTML=`<div class="alert alert-success">✅ Deposit request of ₹${num(a)} submitted! Admin will verify.</div>`;
+  this.reset(); document.getElementById('qrImg').style.display='none'; document.getElementById('qrPl').style.display='block'; document.getElementById('qrPl').textContent='📱 Select amount';
+  setTimeout(()=>al.innerHTML='',5000);
+};
+
+// ============= WITHDRAW =============
+function setWA(v){document.getElementById('withInp').value=v;}
+function setWMax(){if(me)document.getElementById('withInp').value=me.balance;}
+document.getElementById('fWith').onsubmit=function(e){
+  e.preventDefault(); if(!me) return;
+  const a=parseFloat(document.getElementById('withInp').value),bId=document.getElementById('withSel').value,al=document.getElementById('withAlert');
+  if(!a||a<50){al.innerHTML='<div class="alert alert-error">Min withdrawal ₹50</div>';return;}
+  if(a>me.balance){al.innerHTML='<div class="alert alert-error">Insufficient balance!</div>';return;}
+  if(!bId){al.innerHTML='<div class="alert alert-error">Select a bank account</div>';return;}
+  if(!D.txns[me.id]) D.txns[me.id]=[];
+  D.txns[me.id].push({id:uid(),type:'withdraw',amount:a,status:'pending',desc:'Withdrawal',date:new Date().toISOString(),bankId:bId});
+  sBal(me.id,me.balance-a); me=D.users.find(u=>u.id===me.id);
+  sv(); al.innerHTML=`<div class="alert alert-success">✅ Withdrawal of ₹${num(a)} submitted! Admin will process.</div>`;
+  refresh(); this.reset(); setTimeout(()=>al.innerHTML='',5000);
+};
+
+// ============= 💣 MINES GAME =============
+let mg = { active:false, bombs:[], opened:[], mult:1, bombsCount:2, bet:0 };
+
+function initMinesGrid(){
+  const g=document.getElementById('minesGrid');
+  g.innerHTML='';
+  for(let i=0;i<6;i++){
+    const c=document.createElement('div');
+    c.className='mine-cell'; c.id='mc-'+i;
+    c.innerHTML=`<span class="cell-label">#${i+1}</span><span class="cell-icon">💎</span>`;
+    c.onclick=()=>openMinesCell(i);
+    g.appendChild(c);
+  }
+  resetMines();
+}
+
+function resetMines(){
+  mg={active:false,bombs:[],opened:[],mult:1,bombsCount:parseInt(document.querySelector('.bomb-opt.active')?.dataset?.bombs)||2,bet:0};
+  document.getElementById('btnStart').disabled=false;
+  document.getElementById('btnCashout').disabled=true;
+  document.getElementById('minesMult').textContent='1.00x';
+  document.getElementById('minesWin').textContent='₹0';
+  document.getElementById('minesSafe').textContent='4';
+  document.getElementById('curBet').textContent='₹0';
+  document.getElementById('curWin').textContent='₹0';
+  for(let i=0;i<6;i++){
+    const c=document.getElementById('mc-'+i);
+    if(c){c.className='mine-cell';c.innerHTML=`<span class="cell-label">#${i+1}</span><span class="cell-icon">💎</span>`;}
+  }
+}
+
+function selBombs(v,el){
+  document.querySelectorAll('.bomb-opt').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  el.dataset.bombs=v;
+  mg.bombsCount=v;
+  // Update mult table display
+  const safe=6-v;
+  for(let i=1;i<=safe;i++){
+    const m=getMult(v,i);
+  }
+}
+
+function startMines(){
+  if(!me){alert('Login first!');return;}
+  const amt=parseFloat(document.getElementById('betInp').value);
+  if(!amt||amt<1){alert('Enter valid bet amount');return;}
+  if(amt>me.balance){alert('Insufficient balance! You have ₹'+num(me.balance));return;}
+  
+  mg.bet=amt;
+  mg.bombsCount=parseInt(document.querySelector('.bomb-opt.active')?.dataset?.bombs)||2;
+  mg.active=true;
+  mg.opened=[];
+  mg.mult=1;
+  
+  // Generate bombs
+  mg.bombs=[];
+  while(mg.bombs.length<mg.bombsCount){
+    const r=Math.floor(Math.random()*6);
+    if(!mg.bombs.includes(r)) mg.bombs.push(r);
+  }
+  
+  // Deduct
+  sBal(me.id,me.balance-amt); me=D.users.find(u=>u.id===me.id);
+  refresh();
+  
+  document.getElementById('btnStart').disabled=true;
+  document.getElementById('btnCashout').disabled=false;
+  document.getElementById('curBet').textContent='₹'+num(amt);
+  document.getElementById('curWin').textContent='₹0';
+  document.getElementById('minesMult').textContent='1.00x';
+  document.getElementById('minesWin').textContent='₹'+num(amt);
+  const safeLeft=6-mg.bombsCount;
+  document.getElementById('minesSafe').textContent=safeLeft;
+  
+  // Enable cells
+  for(let i=0;i<6;i++){
+    const c=document.getElementById('mc-'+i);
+    if(c)c.classList.remove('disabled');
+  }
+}
+
+function openMinesCell(idx){
+  if(!mg.active) return;
+  if(mg.opened.includes(idx)) return;
+  
+  const c=document.getElementById('mc-'+idx);
+  if(c.classList.contains('revealed')||c.classList.contains('bomb')) return;
+  
+  // Check bomb
+  if(mg.bombs.includes(idx)){
+    // BOMB!
+    mg.active=false;
+    c.className='mine-cell bomb';
+    c.innerHTML=`<span class="cell-label">#${idx+1}</span><span class="cell-icon">💥</span>`;
+    
+    // Reveal all bombs
+    mg.bombs.forEach(b=>{
+      const bc=document.getElementById('mc-'+b);
+      if(bc&&b!==idx){
+        bc.className='mine-cell bomb';
+        bc.innerHTML=`<span class="cell-label">#${b+1}</span><span class="cell-icon">💣</span>`;
+      }
+    });
+    
+    // Disable all
+    document.querySelectorAll('.mine-cell').forEach(e=>e.classList.add('disabled'));
+    document.getElementById('btnStart').disabled=false;
+    document.getElementById('btnCashout').disabled=true;
+    document.getElementById('minesMult').textContent='💥 0.00x';
+    document.getElementById('minesMult').style.color='#ef4444';
+    
+    // Record
+    if(!D.txns[me.id]) D.txns[me.id]=[];
+    D.txns[me.id].push({id:uid(),type:'bet',amount:mg.bet,status:'approved',desc:'Bomb hit!',date:new Date().toISOString()});
+    D.minesHist.push({bet:mg.bet,win:0,result:'bomb',boxes:mg.opened.length,bombs:mg.bombsCount,date:new Date().toISOString()});
+    if(D.minesHist.length>50)D.minesHist.shift();
+    sv();
+    renderMinesHist();
+    return;
+  }
+  
+  // SAFE!
+  mg.opened.push(idx);
+  mg.mult=getMult(mg.bombsCount,mg.opened.length);
+  const win=mg.bet*mg.mult;
+  
+  c.className='mine-cell revealed';
+  c.innerHTML=`<span class="cell-label">#${idx+1}</span><div class="cell-icon">✅</div><div class="cell-mult">${mg.mult}x</div>`;
+  
+  document.getElementById('minesMult').textContent=mg.mult+'x';
+  document.getElementById('minesWin').textContent='₹'+num(win);
+  const safeLeft=6-mg.bombsCount-mg.opened.length;
+  document.getElementById('minesSafe').textContent=safeLeft;
+  document.getElementById('curWin').textContent='₹'+num(win);
+  
+  // Check all safe found
+  if(mg.opened.length>=(6-mg.bombsCount)){
+    cashOutMines();
+  }
+}
+
+function cashOutMines(){
+  if(!mg.active||mg.opened.length===0) return;
+  if(!me) return;
+  
+  mg.active=false;
+  const win=mg.bet*mg.mult;
+  
+  sBal(me.id,me.balance+win); me=D.users.find(u=>u.id===me.id);
+  if(!D.txns[me.id]) D.txns[me.id]=[];
+  D.txns[me.id].push({id:uid(),type:'win',amount:win,status:'approved',desc:'Mines '+mg.mult+'x',date:new Date().toISOString()});
+  D.minesHist.push({bet:mg.bet,win:win,result:'win',boxes:mg.opened.length,mult:mg.mult,bombs:mg.bombsCount,date:new Date().toISOString()});
+  if(D.minesHist.length>50)D.minesHist.shift();
+  sv();
+  
+  document.getElementById('curWin').textContent='₹'+num(win);
+  document.getElementById('btnStart').disabled=false;
+  document.getElementById('btnCashout').disabled=true;
+  document.getElementById('minesMult').textContent=mg.mult+'x ✅';
+  refresh();
+  renderMinesHist();
+}
+
+function renderMinesHist(){
+  const el=document.getElementById('minesHist');
+  if(!D.minesHist.length){el.innerHTML='<p style="color:#8892b0;text-align:center">No games yet</p>';return;}
+  el.innerHTML=D.minesHist.slice(-20).reverse().map(h=>{
+    const cls=h.result==='win'?'win':'loss';
+    const icon=h.result==='win'?'✅':'💥';
+    return `<div class="bet-hist-item"><span>₹${num(h.bet)}</span><span class="${cls}">${icon} ${h.result==='win'?'Won ₹'+num(h.win):'Bomb!'}</span></div>`;
+  }).join('');
+}
+
+function multBet(v){const inp=document.getElementById('betInp');inp.value=Math.max(1,Math.floor(parseFloat(inp.value||10)*v));}
+
+// ============= AUTO LOGIN =============
+(function(){if(me){showPage('p-dash');refresh();}})();
+</script>
+</body>
+</html>
